@@ -1,0 +1,39 @@
+body{
+    margin: 0;
+}
+
+.grid{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.row{
+    display: block;
+    margin: 0;
+    height: 5vw;
+    border: 0;
+    box-sizing: border-box;
+}
+
+.square{
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: 5vw;
+    height: 5vw;
+    border: 1px solid black;
+    line-height: 5vw;
+    text-align: center;
+}
+
+.number{
+    position: absolute;
+    width: 100%;
+}
+
+.borderSquare{
+    background-color: aquamarine;
+}
