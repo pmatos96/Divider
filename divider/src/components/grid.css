@@ -37,3 +37,14 @@ body{
 .borderSquare{
     background-color: aquamarine;
 }
+
+.activeSquare{
+    background-color: blueviolet;
+}
+
+.score{
+    position: relative;
+    margin: auto;
+    width: 20%;
+    height: 5%;
+}
