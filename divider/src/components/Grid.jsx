@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import anime from 'animejs/lib/anime.es.js';
-import { create, all, round, random, matrix } from "mathjs";
+import { create, all, round, random, matrix, help } from "mathjs";
 import _ from "lodash";
 import "./grid.css";
 
@@ -18,12 +18,10 @@ const Grid = () =>{
     const [activePosition, setActivePosition] = useState([centralPosition, centralPosition]);
     const [activeNumber, setActiveNumber] = useState(3);
     const [score, setScore] = useState(0);
+    const [helpOps, setHelpOps] = useState([]);
+    const [currentOp, setCurrentOp] = useState('/');
 
     console.log(numbers);
-    
-    const [ai, setAi] = useState(3);
-
-
 
     const newGame = () => {
         setNumRows(5);
@@ -32,23 +30,74 @@ const Grid = () =>{
         setActivePosition([centralPosition, centralPosition]);
         setActiveNumber(3);
         setScore(0);
+        setCurrentOp('/');
+        setHelpOps([]);
     }
 
-    const randomNumber = () => {
+    const randomNumber = (lim) => {
         let number;
-        number = round(random(1,10),0);
+        number = round(random(1,lim),0);
         return number;
     }
 
     const newNumber = () => {
+        setCurrentOp('/');
         setActiveNumber(activeNumber + 1);
+    }
+
+    const scoreUp = () => {
+        setScore(score + 1);
+        if(score > 0 && score % 10 === 0){
+            setHelpOps([...helpOps, randomNumber(2) === 1 ? '+' : '-']);
+        }
+    }
+
+    const isNextBorder = (nextI, nextJ) => {
+        if(nextJ+1 === 1 || nextI+1 === 1 || nextJ+1 === numRows || nextI+1 === numRows){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    const subtract = (nextI,nextJ,borderNumber) => {
+        let subtractedNumber =  activeNumber > borderNumber ? activeNumber - borderNumber : borderNumber - activeNumber;
+        if(subtractedNumber !== 0){
+            if(isNextBorder(nextI, nextJ)){
+                setNumbers(numbers.subset(math.index(nextI,nextJ), subtractedNumber));
+                setActivePosition([centralPosition, centralPosition]);
+                newNumber();
+                scoreUp();
+            }
+            else{
+                setNumbers(numbers.subset(math.index(nextI,nextJ), null));
+                setActivePosition([nextI, nextJ]);
+                setActiveNumber(subtractedNumber);
+            }
+        }
+    }
+
+    const sum = (nextI,nextJ,borderNumber) => {
+        let summedNumber =  activeNumber + borderNumber;
+        if(isNextBorder(nextI, nextJ)){
+            setNumbers(numbers.subset(math.index(nextI,nextJ), summedNumber));
+            setActivePosition([centralPosition, centralPosition]);
+            newNumber();
+            scoreUp();
+        }
+        else{
+            setNumbers(numbers.subset(math.index(nextI,nextJ), null));
+            setActivePosition([nextI, nextJ]);
+            setActiveNumber(summedNumber);
+        }
     }
 
     const divide = (nextI,nextJ,borderNumber) => {
         setNumbers(numbers.subset(math.index(nextI,nextJ), activeNumber/borderNumber));
         setActivePosition([centralPosition, centralPosition]);
         newNumber();
-        setScore(score + 1);
+        scoreUp();
     }
 
     const addBorder = () => {
@@ -58,10 +107,37 @@ const Grid = () =>{
         newNumber();
     }
 
+    const opsCounter = () => {
+        let sumNumber = helpOps.filter(op => op === '+').length;
+        let subtractNumber = helpOps.filter(op => op === '-').length;
+        return {
+            sum: sumNumber,
+            subtract: subtractNumber
+        }
+    }
+
+    const changeOp = (op) => {
+        // if(op === '/'){
+        //     setCurrentOp('/')
+        //     return;
+        // }
+        let ops = helpOps;
+        let index = helpOps.indexOf(op);
+        ops.splice(index, 1);
+        setHelpOps(ops);
+        setCurrentOp(op);
+    }
+
     const handleMove = (nextI, nextJ) => {
         let borderNumber = numbers._data[nextI][nextJ];
         if(borderNumber){
-            if(activeNumber % borderNumber === 0){
+            if(currentOp === '-'){
+                subtract(nextI,nextJ,borderNumber);
+            }
+            else if(currentOp === '+'){
+                sum(nextI,nextJ,borderNumber);
+            }
+            else if(activeNumber % borderNumber === 0){
                 divide(nextI,nextJ,borderNumber);
             }
             else{
@@ -141,7 +217,7 @@ const Grid = () =>{
     if(!gameStarted){
         _.times(numRows, (i) =>{
             _.times(numRows, (j) =>{
-                let number = randomNumber();
+                let number = randomNumber(10);
                 setNumbers(numbers.subset(math.index(i,j), 
                 j+1 === 1 || i+1 === 1 || j+1 === numRows || i+1 === numRows ? number : null));
             });
@@ -158,9 +234,8 @@ const Grid = () =>{
         };
     });
 
-
     return(
-        
+        <>
         <div className="grid">
             <div className="score">{score}</div>
             {initBoard()}
@@ -169,7 +244,14 @@ const Grid = () =>{
             <button onClick={move} name ='ArrowLeft'>left</button>
             <button onClick={move} name ='ArrowRight'>right</button>
             <button onClick={newGame}>Novo Jogo</button>
+            Operação: {currentOp}
         </div>
+        {helpOps.length > 0 && <div className="operationsContainer">
+            {helpOps.filter(op => op === '+').length > 0 && <button onClick={()=>{changeOp('+')}}>{helpOps.filter(op => op === '+').length} + </button>}
+            {helpOps.filter(op => op === '-').length > 0 && <button onClick={()=>{changeOp('-')}}>{helpOps.filter(op => op === '-').length} - </button>}
+            {/* <button onClick={()=>{changeOp('/')}}> / </button> */}
+        </div>}
+        </>
     )
 }
 
