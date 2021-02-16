@@ -18,7 +18,7 @@ const Grid = () =>{
     const [activePosition, setActivePosition] = useState([centralPosition, centralPosition]);
     const [activeNumber, setActiveNumber] = useState(3);
     const [score, setScore] = useState(0);
-    const [helpOps, setHelpOps] = useState([]);
+    const [helpOps, setHelpOps] = useState(['+','-']);
     const [currentOp, setCurrentOp] = useState('/');
 
     console.log(numbers);
@@ -74,6 +74,7 @@ const Grid = () =>{
                 setNumbers(numbers.subset(math.index(nextI,nextJ), null));
                 setActivePosition([nextI, nextJ]);
                 setActiveNumber(subtractedNumber);
+                setCurrentOp('/');
             }
         }
     }
@@ -90,6 +91,7 @@ const Grid = () =>{
             setNumbers(numbers.subset(math.index(nextI,nextJ), null));
             setActivePosition([nextI, nextJ]);
             setActiveNumber(summedNumber);
+            setCurrentOp('/');
         }
     }
 
@@ -237,20 +239,28 @@ const Grid = () =>{
     return(
         <>
         <div className="grid">
-            <div className="score">{score}</div>
+            <div className="score mainFont">
+                Score 
+                <br></br>
+                {score}
+            </div>
             {initBoard()}
-            <button name ='ArrowUp' onClick={move} >up</button>
-            <button onClick={move} name ='ArrowDown'>down</button>
-            <button onClick={move} name ='ArrowLeft'>left</button>
-            <button onClick={move} name ='ArrowRight'>right</button>
-            <button onClick={newGame}>Novo Jogo</button>
-            Operação: {currentOp}
+            {/* <button name ='ArrowUp' onClick={move} >up</button> */}
+            {/* <button onClick={move} name ='ArrowDown'>down</button> */}
+            {/* <button onClick={move} name ='ArrowLeft'>left</button> */}
+            {/* <button onClick={move} name ='ArrowRight'>right</button> */}
+            <br></br>
+            
         </div>
-        {helpOps.length > 0 && <div className="operationsContainer">
-            {helpOps.filter(op => op === '+').length > 0 && <button onClick={()=>{changeOp('+')}}>{helpOps.filter(op => op === '+').length} + </button>}
-            {helpOps.filter(op => op === '-').length > 0 && <button onClick={()=>{changeOp('-')}}>{helpOps.filter(op => op === '-').length} - </button>}
+        <div className="btnContainer">
+            <div className="btn newGameBtn" onClick={newGame}>Novo Jogo</div>
+        </div>
+        <div className="operationsContainer">
+            {helpOps.filter(op => op === '+').length > 0 && <button className="btn" onClick={()=>{changeOp('+')}}>{helpOps.filter(op => op === '+').length} + </button>}
+            {helpOps.filter(op => op === '-').length > 0 && <button className="btn" onClick={()=>{changeOp('-')}}>{helpOps.filter(op => op === '-').length} - </button>}
+            {score > 10 && <div className="currentOp">{currentOp}</div>} 
             {/* <button onClick={()=>{changeOp('/')}}> / </button> */}
-        </div>}
+        </div>
         </>
     )
 }
