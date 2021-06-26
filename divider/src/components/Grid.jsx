@@ -48,6 +48,8 @@ const Grid = () =>{
 
     const insertRankingScore = () => {
 
+        let firebaseApp;
+
         const firebaseConfig = {
             apiKey: "AIzaSyCIQ0_33rYSexhy7URacbKYfNm4GAR_mDc",
             authDomain: "divider-game.firebaseapp.com",
@@ -58,10 +60,15 @@ const Grid = () =>{
         };
 
         
-        const firebaseApp = firebase.initializeApp(firebaseConfig);
+        if (firebase.apps.length === 0) {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+        }
+        else{
+            firebaseApp = firebase.apps[0];
+        }
 
         var db = firebaseApp.firestore();
-
+        
         db.collection("userScores").add({
             "name": playerName,
             "score": score
@@ -101,7 +108,7 @@ const Grid = () =>{
 
         if (
             numbers._data[centralPosition][centralPosition - 1] && numbers._data[centralPosition][centralPosition + 1] &&
-            numbers._data[centralPosition + 1][centralPosition] && numbers._data[centralPosition + 1][centralPosition]
+            numbers._data[centralPosition - 1][centralPosition] && numbers._data[centralPosition + 1][centralPosition]
             && checkGameOverDivisionConditions() && (!helpOps || !helpOps.length)
         )
         {
