@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import anime from 'animejs/lib/anime.es.js';
 import { create, all, round, random, matrix, help } from "mathjs";
 import _ from "lodash";
+import firebase from "firebase";
 import "./grid.css";
 
 
@@ -9,7 +10,6 @@ const Grid = () =>{
 
     const config = { };
     const math = create(all, config);
-
     const [numRows, setNumRows] = useState(5);
     const [gameStarted, setGameStarted] = useState(false);
     const [numbers, setNumbers] = useState(math.zeros(numRows, numRows));
@@ -20,8 +20,13 @@ const Grid = () =>{
     const [score, setScore] = useState(0);
     const [helpOps, setHelpOps] = useState(['+','-']);
     const [currentOp, setCurrentOp] = useState('/');
+    const [insertNameStep, setInsertNameStep] = useState(false);
+    const [gameIsOver, setGameIsOver] = useState(false);
+    const [ranking, setRanking] = useState([]);
+    const [playerName, setPlayerName] = useState('');
 
     console.log(numbers);
+    console.log(centralPosition);
 
     const newGame = () => {
         setNumRows(5);
@@ -32,6 +37,7 @@ const Grid = () =>{
         setScore(0);
         setCurrentOp('/');
         setHelpOps([]);
+        setGameIsOver(false);
     }
 
     const randomNumber = (lim) => {
@@ -40,9 +46,90 @@ const Grid = () =>{
         return number;
     }
 
+    const insertRankingScore = () => {
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCIQ0_33rYSexhy7URacbKYfNm4GAR_mDc",
+            authDomain: "divider-game.firebaseapp.com",
+            projectId: "divider-game",
+            storageBucket: "divider-game.appspot.com",
+            messagingSenderId: "1019366920932",
+            appId: "1:1019366920932:web:80ce4c0e3ec4392d3c52f1"
+        };
+
+        
+        const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+        var db = firebaseApp.firestore();
+
+        db.collection("userScores").add({
+            "name": playerName,
+            "score": score
+        })
+        .then((docRef) => {
+            console.log("Document written with ID: ", docRef.id);
+        })
+        .catch((error) => {
+            console.error("Error adding document: ", error);
+        });
+
+        db.collection("userScores").get().then((querySnapshot)=>{
+
+            let rankingData = [];
+
+            querySnapshot.forEach((doc) => {
+                console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+                rankingData.push(doc.data());
+            });
+
+            (rankingData || []).sort( (a,b) => {
+                // Ordena o ranking pela pontuação
+                if ( a.score < b.score ){
+                    return 1;
+                }
+                if ( a.score > b.score ){
+                    return -1;
+                }
+                return 0;
+            })
+
+            setRanking(rankingData);
+        });
+    }
+
+    const checkGameOver = () => {
+
+        if (
+            numbers._data[centralPosition][centralPosition - 1] && numbers._data[centralPosition][centralPosition + 1] &&
+            numbers._data[centralPosition + 1][centralPosition] && numbers._data[centralPosition + 1][centralPosition]
+            && checkGameOverDivisionConditions() && (!helpOps || !helpOps.length)
+        )
+        {
+            setGameIsOver(true);
+            setInsertNameStep(true);
+            
+        }
+    }
+
+    const checkGameOverDivisionConditions = () => {
+        return (
+            numbers._data[centralPosition][centralPosition - 1] % (activeNumber + 1) !== 0 &&
+            numbers._data[centralPosition][centralPosition + 1] % (activeNumber + 1) !== 0 &&
+            numbers._data[centralPosition + 1][centralPosition] % (activeNumber + 1) !== 0 &&
+            numbers._data[centralPosition + 1][centralPosition] % (activeNumber + 1) !== 0
+        )
+    }
+
+    const handleRanking = () => {
+
+        setInsertNameStep(false);
+        insertRankingScore();
+    } 
+
     const newNumber = () => {
         setCurrentOp('/');
         setActiveNumber(activeNumber + 1);
+        checkGameOver();
     }
 
     const scoreUp = () => {
@@ -189,6 +276,8 @@ const Grid = () =>{
                     addBorder();
                 }
                 break;
+            default:
+                break;
         }
 
 
@@ -245,10 +334,6 @@ const Grid = () =>{
                 {score}
             </div>
             {initBoard()}
-            {/* <button name ='ArrowUp' onClick={move} >up</button> */}
-            {/* <button onClick={move} name ='ArrowDown'>down</button> */}
-            {/* <button onClick={move} name ='ArrowLeft'>left</button> */}
-            {/* <button onClick={move} name ='ArrowRight'>right</button> */}
             <br></br>
             
         </div>
@@ -261,6 +346,19 @@ const Grid = () =>{
             {score > 10 && <div className="currentOp">{currentOp}</div>} 
             {/* <button onClick={()=>{changeOp('/')}}> / </button> */}
         </div>
+        {gameIsOver && 
+        <div className="rankingBoard">
+            <h1>Game Over</h1>
+            {insertNameStep && 
+            <>
+            <input type="text" label="Insira seu nome" name="nameInput" value={playerName} onChange={(e)=>{setPlayerName(e.target.value)}}/>
+            <button onClick={handleRanking}>Confirmar</button>
+            </>
+            }
+            <ol>
+            {(ranking || []).map(item => <li>{item.name} - Score: {item.score}</li>)}
+            </ol>
+        </div>}
         </>
     )
 }

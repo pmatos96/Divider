@@ -1,6 +1,7 @@
 body{
     margin: 0;
     font-family: 'Varela Round', sans-serif;
+    background-color: rgb(127, 255, 212, 0.3);
 }
 
 .grid{
@@ -28,6 +29,7 @@ body{
     border: 1px solid black;
     line-height: 5vw;
     text-align: center;
+    border-style: dashed;
 }
 
 .number{
@@ -127,4 +129,14 @@ body{
     font-size: large;
     font-weight: bold;
     text-shadow: 2px 2px 2px white;
+}
+
+.rankingBoard{
+    height: 50vh;
+    width: 20vw;
+    position: fixed;
+    top: 25vh;
+    left: 40vw;
+    background-color: yellow;
+    text-align: center;
 }
