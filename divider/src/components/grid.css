@@ -139,4 +139,15 @@ body{
     left: 40vw;
     background-color: yellow;
     text-align: center;
+
+    min-height: 30vh;
+    width: 20vw;
+    position: fixed;
+    top: 15vh;
+    left: 40vw;
+    background-color: white;
+    text-align: center;
+    border-radius: 7px;
+    box-shadow: 5px 5px 4px black;
+    border: 1px solid;
 }

@@ -18,7 +18,7 @@ const Grid = () =>{
     const [activePosition, setActivePosition] = useState([centralPosition, centralPosition]);
     const [activeNumber, setActiveNumber] = useState(3);
     const [score, setScore] = useState(0);
-    const [helpOps, setHelpOps] = useState(['+','-']);
+    const [helpOps, setHelpOps] = useState([]);
     const [currentOp, setCurrentOp] = useState('/');
     const [insertNameStep, setInsertNameStep] = useState(false);
     const [gameIsOver, setGameIsOver] = useState(false);
@@ -38,6 +38,9 @@ const Grid = () =>{
         setCurrentOp('/');
         setHelpOps([]);
         setGameIsOver(false);
+        setInsertNameStep(false);
+        setRanking([]);
+        setPlayerName('');
     }
 
     const randomNumber = (lim) => {
@@ -348,9 +351,10 @@ const Grid = () =>{
             <div className="btn newGameBtn" onClick={newGame}>Novo Jogo</div>
         </div>
         <div className="operationsContainer">
+            {helpOps && helpOps.length ? <b>Operações bônus</b> : ''}
             {helpOps.filter(op => op === '+').length > 0 && <button className="btn" onClick={()=>{changeOp('+')}}>{helpOps.filter(op => op === '+').length} + </button>}
             {helpOps.filter(op => op === '-').length > 0 && <button className="btn" onClick={()=>{changeOp('-')}}>{helpOps.filter(op => op === '-').length} - </button>}
-            {score > 10 && <div className="currentOp">{currentOp}</div>} 
+            {score > 10 && <><b>Operação atual</b> <div className="currentOp">{currentOp}</div></>} 
             {/* <button onClick={()=>{changeOp('/')}}> / </button> */}
         </div>
         {gameIsOver && 
@@ -358,8 +362,8 @@ const Grid = () =>{
             <h1>Game Over</h1>
             {insertNameStep && 
             <>
-            <input type="text" label="Insira seu nome" name="nameInput" value={playerName} onChange={(e)=>{setPlayerName(e.target.value)}}/>
-            <button onClick={handleRanking}>Confirmar</button>
+            <input type="text" placeholder="Insira seu nome" name="nameInput" value={playerName} onChange={(e)=>{setPlayerName(e.target.value)}}/>
+            {playerName && playerName.length && <button onClick={handleRanking}>Confirmar</button>}
             </>
             }
             <ol>
