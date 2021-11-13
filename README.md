@@ -11,6 +11,6 @@ o objetivo de dividir ao máximo os números na tela para aumentar o placar.
 
 ## Website
 
-The game is available in: / O jogo está disponível em:
+The game is available at: / O jogo está disponível em:
 
 [divider-game.web.app](https://divider-game.web.app)
