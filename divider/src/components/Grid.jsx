@@ -4,6 +4,10 @@ import { create, all, round, random, matrix, help } from "mathjs";
 import _ from "lodash";
 import firebase from "firebase";
 import "./grid.css";
+import Score from "./Score";
+import NewGameButton from "./NewGameButton";
+import Operations from "./Operations";
+import Ranking from "./Ranking";
 
 
 const Grid = () =>{
@@ -338,38 +342,26 @@ const Grid = () =>{
     return(
         <>
         <div className="grid">
-            <div className="score mainFont">
-                Score 
-                <br></br>
-                {score}
-            </div>
+            <Score score={score}/>
             {initBoard()}
             <br></br>
-            
         </div>
-        <div className="btnContainer">
-            <div className="btn newGameBtn" onClick={newGame}>Novo Jogo</div>
-        </div>
-        <div className="operationsContainer">
-            {helpOps && helpOps.length ? <b>Operações bônus</b> : ''}
-            {helpOps.filter(op => op === '+').length > 0 && <button className="btn" onClick={()=>{changeOp('+')}}>{helpOps.filter(op => op === '+').length} + </button>}
-            {helpOps.filter(op => op === '-').length > 0 && <button className="btn" onClick={()=>{changeOp('-')}}>{helpOps.filter(op => op === '-').length} - </button>}
-            {score > 10 && <><b>Operação atual</b> <div className="currentOp">{currentOp}</div></>} 
-            {/* <button onClick={()=>{changeOp('/')}}> / </button> */}
-        </div>
+        <NewGameButton newGameFunction={newGame}/>
+        <Operations 
+            helpOps={helpOps} 
+            currentOp={currentOp} 
+            changeOpFunction={changeOp} 
+            score={score}
+        />
         {gameIsOver && 
-        <div className="rankingBoard">
-            <h1>Game Over</h1>
-            {insertNameStep && 
-            <>
-            <input type="text" placeholder="Insira seu nome" name="nameInput" value={playerName} onChange={(e)=>{setPlayerName(e.target.value)}}/>
-            {playerName && playerName.length && <button onClick={handleRanking}>Confirmar</button>}
-            </>
-            }
-            <ol>
-            {(ranking || []).map(item => <li>{item.name} - Score: {item.score}</li>)}
-            </ol>
-        </div>}
+        <Ranking 
+            insertNameStep={insertNameStep}
+            playerName={playerName}
+            setPlayerNameFunction={setPlayerName}
+            handleRankingFunction={handleRanking}
+            ranking={ranking}
+        />
+        }
         </>
     )
 }
