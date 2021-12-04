@@ -29,8 +29,7 @@ const Grid = () =>{
     const [ranking, setRanking] = useState([]);
     const [playerName, setPlayerName] = useState('');
 
-    console.log(numbers);
-    console.log(centralPosition);
+
 
     const newGame = () => {
         setNumRows(5);
@@ -92,7 +91,6 @@ const Grid = () =>{
             let rankingData = [];
 
             querySnapshot.forEach((doc) => {
-                console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
                 rankingData.push(doc.data());
             });
 
@@ -259,7 +257,6 @@ const Grid = () =>{
 
         let nextI;
         let nextJ;
-        console.log(e.key);
         let direction = e.type === 'keydown' ? e.key : e.target.name;
         
         switch(direction){
@@ -285,7 +282,6 @@ const Grid = () =>{
                 handleMove(nextI, nextJ);
                 break;
             case 'Enter':
-                console.log(activePosition, [centralPosition, centralPosition]);
                 if(activePosition[0] !== centralPosition || activePosition[1] !== centralPosition){
                     addBorder();
                 }
@@ -327,7 +323,7 @@ const Grid = () =>{
                 j+1 === 1 || i+1 === 1 || j+1 === numRows || i+1 === numRows ? number : null));
             });
         });
-        console.log(numbers);
+        
         setGameStarted(true);
     }   
 

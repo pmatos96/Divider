@@ -90,6 +90,13 @@ body{
     align-items: center;
 }
 
+.rankingBtnContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2%;
+}
+
 .btn{
     width: 85px;
     height: 35px;
@@ -132,16 +139,16 @@ body{
 }
 
 .rankingBoard{
-    height: 50vh;
-    width: 20vw;
+    min-height: 50vh;
+    min-width: 20vw;
     position: fixed;
     top: 25vh;
     left: 40vw;
     background-color: yellow;
     text-align: center;
-
+    padding: 1%;
     min-height: 30vh;
-    width: 20vw;
+    min-width: 20vw;
     position: fixed;
     top: 15vh;
     left: 40vw;
